@@ -57,6 +57,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        /** Do nothing while user presses the back button */
+    }
+
     private fun setupChooseBuildingRecyclerView() {
         chooseBuilding_recyclerView.adapter = chooseBuildingAdapter
         chooseBuilding_recyclerView.layoutManager = LinearLayoutManager(this)

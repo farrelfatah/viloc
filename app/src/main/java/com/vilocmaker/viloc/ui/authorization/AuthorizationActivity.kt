@@ -76,7 +76,7 @@ class AuthorizationActivity : AppCompatActivity() {
             loading.visibility = View.GONE
             if (authorizationResult.error != null) {
                 showAuthorizationFailed(authorizationResult.error)
-                stayOnAuthorizationActivity()
+                stayOnAuthorizationActivity(buildingName!!)
             }
             if (authorizationResult.success != null) {
                 updateUiWithUser(authorizationResult.success)
@@ -174,8 +174,10 @@ class AuthorizationActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun stayOnAuthorizationActivity() {
-        val intent = Intent(this, AuthorizationActivity::class.java)
+    private fun stayOnAuthorizationActivity(buildingName: String) {
+        val intent = Intent(this, AuthorizationActivity::class.java).apply {
+            putExtra(EXTRA_MESSAGE, buildingName)
+        }
         startActivity(intent)
     }
 }

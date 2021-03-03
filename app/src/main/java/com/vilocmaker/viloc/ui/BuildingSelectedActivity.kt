@@ -1,6 +1,5 @@
 package com.vilocmaker.viloc.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,7 +7,6 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.vilocmaker.viloc.R
 import com.vilocmaker.viloc.data.preference.SharedPreferences2
@@ -20,26 +18,27 @@ import com.vilocmaker.viloc.repository.Repository
 import com.vilocmaker.viloc.ui.authorization.AuthorizationViewModel
 import com.vilocmaker.viloc.ui.authorization.AuthorizationViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.*
 import java.util.*
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
-class BuildingSelectedActivity : AppCompatActivity() {
+class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
+
+    lateinit var job: Job
 
     private lateinit var viewModel: MainViewModel
     private lateinit var authorizationViewModel: AuthorizationViewModel
 
-    private lateinit var retrievedRoomData: MutableList<RetrievedRoomData>
-    private lateinit var retrievedSensorData: MutableList<RetrievedSensorData>
-    private lateinit var retrievedDetectionData: MutableList<RetrievedDetectionData>
-    private lateinit var retrievedAckData: MutableList<RetrievedAcknowledgementData>
-
-    private var roomOfTheBuilding: MutableList<RetrievedRoomData> = mutableListOf()
-    private var sensorOfTheBuilding: MutableList<RetrievedSensorData> = mutableListOf()
-    private var detectionOfTheBuilding: MutableList<RetrievedDetectionData> = mutableListOf()
-    private var ackOfTheBuilding: MutableList<RetrievedAcknowledgementData> = mutableListOf()
+    override val coroutineContext: CoroutineContext
+        get() = job + Dispatchers.Main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_building_selected)
+
+        job = Job()
 
         SharedPreferences2.init(this)
 
@@ -99,40 +98,47 @@ class BuildingSelectedActivity : AppCompatActivity() {
             }
         })
 
-        retrievedRoomData = retrieveRoomData(viewModel)
+        MainScope().launch(coroutineContext) {
+            val retrievedRoomData = async { retrieveRoomData(viewModel) }
 
-        retrievedSensorData = retrieveSensorData(viewModel)
+            val retrievedSensorData = async { retrieveSensorData(viewModel) }
 
-        retrievedDetectionData = retrieveDetectionData(viewModel)
+            val retrievedDetectionData = async { retrieveDetectionData(viewModel) }
 
-        retrievedAckData = retrieveAckData(viewModel)
+            val retrievedAckData = async { retrieveAckData(viewModel) }
 
-        Log.d("Main", "buildingId: $buildingId, debug 0")
-        Log.d("Main", retrievedRoomData.size.toString() + " debug 1a")
-        Log.d("Main", retrievedSensorData.size.toString() + " debug 1b")
-        Log.d("Main", retrievedDetectionData.size.toString() + " debug 1c")
-        Log.d("Main", retrievedAckData.size.toString() + " debug 1d")
+            Log.d("Main", "Async building Id: $buildingId")
 
+            Log.d("Main", retrievedRoomData.await().size.toString() + " building: $buildingId, debug 1a (before filter)")
 
-        retrievedRoomData.filterTo(roomOfTheBuilding, { it.buildingID == buildingId })
+            retrievedRoomData.await().filter { it.buildingID == buildingId }
 
-        Log.d("Main", roomOfTheBuilding.size.toString() + " debug 2")
+            Log.d("Main", retrievedRoomData.await().size.toString() + " debug 1a (after filter)")
 
-        for (eachRoom in roomOfTheBuilding) {
-            retrievedSensorData.filterTo(sensorOfTheBuilding, { it.roomID == eachRoom.roomID })
+            Log.d("Main", retrievedSensorData.await().size.toString() + " debug 1b (before filter)")
+
+            for (eachRoom in retrievedRoomData.await()) {
+                retrievedSensorData.await().filter { it.roomID == eachRoom.roomID }
+            }
+
+            Log.d("Main", retrievedSensorData.await().size.toString() + " debug 1b (after filter)")
+
+            Log.d("Main", retrievedDetectionData.await().size.toString() + " debug 1c")
+
+            for (eachSensor in retrievedSensorData.await()) {
+                retrievedDetectionData.await().filter { it.deviceID == eachSensor.deviceID }
+            }
+
+            victimQty.text = retrievedDetectionData.await().size.toString()
+
+            Log.d("Main", retrievedAckData.await().size.toString() + " debug 1d")
+
+            for (eachDetection in retrievedDetectionData.await()) {
+                retrievedAckData.await().filter { it.detectionID == eachDetection.detectionID }
+            }
+
+            victimAck.text = retrievedAckData.await().size.toString()
         }
-
-        for (eachSensor in sensorOfTheBuilding) {
-            retrievedDetectionData.filterTo(detectionOfTheBuilding, { it.deviceID == eachSensor.deviceID })
-        }
-
-        for (eachDetection in detectionOfTheBuilding) {
-            retrievedAckData.filterTo(ackOfTheBuilding, { it.detectionID == eachDetection.detectionID })
-        }
-
-        victimQty.text = detectionOfTheBuilding.size.toString()
-
-        victimAck.text = ackOfTheBuilding.size.toString()
 
         topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
@@ -165,137 +171,150 @@ class BuildingSelectedActivity : AppCompatActivity() {
         }
     }
 
-    private fun retrieveRoomData(viewModel: MainViewModel): MutableList<RetrievedRoomData> {
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
+
+    override fun onBackPressed() {
+        /** Do nothing while user presses the back button */
+    }
+
+    private suspend fun retrieveRoomData(viewModel: MainViewModel): MutableList<RetrievedRoomData> {
         val roomList: MutableList<RetrievedRoomData> = mutableListOf()
 
         viewModel.retrieveRoomItemList("room", null, null)
-        viewModel.myRoomItemListResponse.observe(this, { response ->
-            if (response.isSuccessful) {
-                for (eachRoom in response.body()!!.data) {
-                    Log.d("Main", eachRoom._id.toString().substring(6, 30) + " from Building Selected Activity" + " src")
-                    Log.d("Main", response.code().toString() + " from Building Selected Activity")
-                    Log.d("Main", response.message() + " from Building Selected Activity")
+
+        return suspendCoroutine { continuation ->
+            viewModel.myRoomItemListResponse.observe(this, { response ->
+                if (response.isSuccessful) {
+                    for (eachRoom in response.body()!!.data) {
+                        Log.d("Main", eachRoom._id.toString().substring(6, 30) + " Roo from Building Selected Activity" + " src")
+                        Log.d("Main", response.code().toString() + " Roo from Building Selected Activity")
+                        Log.d("Main", response.message() + " Roo from Building Selected Activity")
+                    }
+                } else {
+                    Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
-            }
 
-            for (eachRoom in response.body()!!.data) {
-                val aRoom = RetrievedRoomData(
-                    eachRoom._id.toString().substring(6, 30),
-                    eachRoom.buildingID,
-                    eachRoom.roomName,
-                    eachRoom.floorNumber
-                )
+                for (eachRoom in response.body()!!.data) {
+                    val aRoom = RetrievedRoomData(
+                            eachRoom._id.toString().substring(6, 30),
+                            eachRoom.buildingID,
+                            eachRoom.roomName,
+                            eachRoom.floorNumber
+                    )
+                    roomList.add(aRoom)
+                }
 
-                roomList.add(aRoom)
-            }
+                for (eachRoom in roomList) {
+                    Log.d("Main", eachRoom.roomName + " Roo from Building Selected Activity" + " res")
+                }
 
-            for (eachRoom in roomList) {
-                Log.d("Main", eachRoom.roomName + " from Building Selected Activity" + " res")
-            }
-
-            Log.d("Main", roomList.size.toString() + " from Building Selected Activity" + " res")
-        })
-
-        Log.d("Main", roomList.size.toString() + " from Building Selected Activity" + " res (outside)")
-
-        return roomList
+                continuation.resume(roomList)
+            })
+        }
     }
 
-    private fun retrieveSensorData(viewModel: MainViewModel): MutableList<RetrievedSensorData> {
+    private suspend fun retrieveSensorData(viewModel: MainViewModel): MutableList<RetrievedSensorData> {
         val sensorList: MutableList<RetrievedSensorData> = mutableListOf()
 
         viewModel.retrieveSensorItemList("sensor", null, null)
-        viewModel.mySensorItemListResponse.observe(this, { response ->
-            if (response.isSuccessful) {
-                for (eachSensor in response.body()!!.data) {
-                    Log.d("Main", eachSensor._id.toString().substring(6, 30) + " from Building Selected Activity" + " src")
-                    Log.d("Main", response.code().toString() + " from Building Selected Activity")
-                    Log.d("Main", response.message() + " from Building Selected Activity")
+
+        return suspendCoroutine { continuation ->
+            viewModel.mySensorItemListResponse.observe(this, { response ->
+                if (response.isSuccessful) {
+                    for (eachSensor in response.body()!!.data) {
+                        Log.d("Main", eachSensor._id.toString().substring(6, 30) + " Sen from Building Selected Activity" + " src")
+                        Log.d("Main", response.code().toString() + " Sen from Building Selected Activity")
+                        Log.d("Main", response.message() + " Sen from Building Selected Activity")
+                    }
+                } else {
+                    Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
-            }
 
-            for (eachSensor in response.body()!!.data) {
-                val aSensor = RetrievedSensorData(
-                        eachSensor._id.toString().substring(6, 30),
-                        eachSensor.roomID
-                )
+                for (eachSensor in response.body()!!.data) {
+                    val aSensor = RetrievedSensorData(
+                            eachSensor._id.toString().substring(6, 30),
+                            eachSensor.roomID
+                    )
+                    sensorList.add(aSensor)
+                }
 
-                sensorList.add(aSensor)
-            }
+                for (eachSensor in sensorList) {
+                    Log.d("Main", eachSensor.deviceID + " Sen from Building Selected Activity" + " res")
+                }
 
-            for (eachSensor in sensorList) {
-                Log.d("Main", eachSensor.deviceID + " from Building Selected Activity" + " res")
-            }
-        })
-
-        return sensorList
+                continuation.resume(sensorList)
+            })
+        }
     }
 
-    private fun retrieveDetectionData(viewModel: MainViewModel): MutableList<RetrievedDetectionData> {
+    private suspend fun retrieveDetectionData(viewModel: MainViewModel): MutableList<RetrievedDetectionData> {
         val detectionList: MutableList<RetrievedDetectionData> = mutableListOf()
 
         viewModel.retrieveDetectionItemList("detection", null, null)
-        viewModel.myDetectionItemListResponse.observe(this, { response ->
-            if (response.isSuccessful) {
-                for (eachDetection in response.body()!!.data) {
-                    Log.d("Main", eachDetection._id.toString().substring(6, 30) + " from Building Selected Activity" + " src")
-                    Log.d("Main", response.code().toString() + " from Building Selected Activity")
-                    Log.d("Main", response.message() + " from Building Selected Activity")
+
+        return suspendCoroutine { continuation ->
+            viewModel.myDetectionItemListResponse.observe(this, { response ->
+                if (response.isSuccessful) {
+                    for (eachDetection in response.body()!!.data) {
+                        Log.d("Main", eachDetection._id.toString().substring(6, 30) + " Det from Building Selected Activity" + " src")
+                        Log.d("Main", response.code().toString() + " Det from Building Selected Activity")
+                        Log.d("Main", response.message() + " Det from Building Selected Activity")
+                    }
+                } else {
+                    Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
-            }
 
-            for (eachDetection in response.body()!!.data) {
-                val aDetection = RetrievedDetectionData(
-                        eachDetection._id.toString().substring(6, 30),
-                        eachDetection.deviceID
-                )
+                for (eachDetection in response.body()!!.data) {
+                    val aDetection = RetrievedDetectionData(
+                            eachDetection._id.toString().substring(6, 30),
+                            eachDetection.deviceID
+                    )
+                    detectionList.add(aDetection)
+                }
 
-                detectionList.add(aDetection)
-            }
+                for (eachDetection in detectionList) {
+                    Log.d("Main", eachDetection.detectionID + " Det from Building Selected Activity" + " res")
+                }
 
-            for (eachDetection in detectionList) {
-                Log.d("Main", eachDetection.detectionID + " from Building Selected Activity" + " res")
-            }
-        })
-
-        return detectionList
+                continuation.resume(detectionList)
+            })
+        }
     }
 
-    private fun retrieveAckData(viewModel: MainViewModel): MutableList<RetrievedAcknowledgementData> {
+    private suspend fun retrieveAckData(viewModel: MainViewModel): MutableList<RetrievedAcknowledgementData> {
         val ackList: MutableList<RetrievedAcknowledgementData> = mutableListOf()
 
         viewModel.retrieveAcknowledgementItemList("acknowledgement", null, null)
-        viewModel.myAcknowledgementItemListResponse.observe(this, { response ->
-            if (response.isSuccessful) {
-                for (eachAck in response.body()!!.data) {
-                    Log.d("Main", eachAck._id.toString().substring(6, 30) + " from Building Selected Activity" + " src")
-                    Log.d("Main", response.code().toString() + " from Building Selected Activity")
-                    Log.d("Main", response.message() + " from Building Selected Activity")
+
+        return suspendCoroutine { continuation ->
+            viewModel.myAcknowledgementItemListResponse.observe(this, { response ->
+                if (response.isSuccessful) {
+                    for (eachAck in response.body()!!.data) {
+                        Log.d("Main", eachAck._id.toString().substring(6, 30) + " Ack from Building Selected Activity" + " src")
+                        Log.d("Main", response.code().toString() + " Ack from Building Selected Activity")
+                        Log.d("Main", response.message() + " Ack from Building Selected Activity")
+                    }
+                } else {
+                    Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
-            }
 
-            for (eachAck in response.body()!!.data) {
-                val anAck = RetrievedAcknowledgementData(
-                        eachAck._id.toString().substring(6, 30),
-                        eachAck.detectionID
-                )
+                for (eachAck in response.body()!!.data) {
+                    val anAck = RetrievedAcknowledgementData(
+                            eachAck._id.toString().substring(6, 30),
+                            eachAck.detectionID
+                    )
+                    ackList.add(anAck)
+                }
 
-                ackList.add(anAck)
-            }
+                for (eachAck in ackList) {
+                    Log.d("Main", eachAck.ackID + " Ack from Building Selected Activity" + " res")
+                }
+            })
 
-            for (eachAck in ackList) {
-                Log.d("Main", eachAck.ackID + " from Building Selected Activity" + " res")
-            }
-        })
-
-        return ackList
+            continuation.resume(ackList)
+        }
     }
 }

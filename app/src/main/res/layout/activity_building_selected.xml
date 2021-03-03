@@ -250,7 +250,7 @@
                             android:id="@+id/alamat_detailGedung"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/quarter_default_margin"
+                            android:layout_marginBottom="@dimen/half_default_margin"
                             android:text="TextView"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
@@ -265,7 +265,7 @@
                             android:id="@+id/koordinat_detailGedung"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/quarter_default_margin"
+                            android:layout_marginBottom="@dimen/half_default_margin"
                             android:text="TextView"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
@@ -280,7 +280,7 @@
                             android:id="@+id/dimensi_detailGedung"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/quarter_default_margin"
+                            android:layout_marginBottom="@dimen/half_default_margin"
                             android:text="TextView"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
@@ -295,7 +295,7 @@
                             android:id="@+id/lantai_detailGedung"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/quarter_default_margin"
+                            android:layout_marginBottom="@dimen/half_default_margin"
                             android:text="TextView"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
