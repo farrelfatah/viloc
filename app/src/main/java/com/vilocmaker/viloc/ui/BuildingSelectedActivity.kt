@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +16,9 @@ import com.vilocmaker.viloc.model.RetrievedSensorData
 import com.vilocmaker.viloc.repository.Repository
 import com.vilocmaker.viloc.ui.authorization.AuthorizationViewModel
 import com.vilocmaker.viloc.ui.authorization.AuthorizationViewModelFactory
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.*
+import kotlinx.android.synthetic.main.activity_building_selected.*
+import kotlinx.android.synthetic.main.activity_main.topAppBar
 import kotlinx.coroutines.*
 import java.util.*
 import kotlin.coroutines.CoroutineContext
@@ -43,17 +44,6 @@ class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
         SharedPreferences2.init(this)
 
         val buildingId = SharedPreferences2.buildingId
-        val buildingName = findViewById<TextView>(R.id.cardTitle_buildingTitle)
-        val buildingStatus = findViewById<TextView>(R.id.cardSubs_buildingStatus)
-
-        val victimQty = findViewById<TextView>(R.id.number_victimQty)
-        val victimAck = findViewById<TextView>(R.id.number_victimAck)
-
-        val detailOfBuildingAddress = findViewById<TextView>(R.id.alamat_detailGedung)
-        val detailOfBuildingCoordinate = findViewById<TextView>(R.id.koordinat_detailGedung)
-        val detailOfBuildingDimens = findViewById<TextView>(R.id.dimensi_detailGedung)
-        val detailOfBuildingFloorNum = findViewById<TextView>(R.id.lantai_detailGedung)
-        val detailOfBuildingStatus = findViewById<TextView>(R.id.status_detailGedung)
 
         val repository = Repository()
         val viewModelFactory = MainViewModelFactory(repository)
@@ -70,26 +60,26 @@ class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
                 Log.d("Main", response.code().toString())
                 Log.d("Main", response.message())
 
-                buildingName.text = response.body()!!.data.buildingName
-                buildingStatus.text = response.body()!!.data.buildingStatus.toString()
+                cardTitle_buildingTitle.text = response.body()!!.data.buildingName
+                cardSubs_buildingStatus.text = response.body()!!.data.buildingStatus.toString()
                         .toLowerCase(Locale.ROOT)
                         .capitalize(Locale.ROOT)
 
-                detailOfBuildingAddress.text = response.body()!!.data.buildingAddress
+                alamat_detailGedung.text = response.body()!!.data.buildingAddress
 
                 val xAxis = response.body()!!.data.buildingCoordinate.x_Axis.toString()
                 val yAxis = response.body()!!.data.buildingCoordinate.y_Axis.toString()
                 val coordinate = "$xAxis, $yAxis"
 
-                detailOfBuildingCoordinate.text = coordinate
+                koordinat_detailGedung.text = coordinate
 
                 val xLength = response.body()!!.data.horizontalLength.toString()
                 val yLength = response.body()!!.data.verticalLength.toString()
                 val dimens = "$xLength m X $yLength m"
-                detailOfBuildingDimens.text = dimens
+                dimensi_detailGedung.text = dimens
 
-                detailOfBuildingFloorNum.text = response.body()!!.data.levelNumber.toString()
-                detailOfBuildingStatus.text = response.body()!!.data.buildingStatus.toString()
+                lantai_detailGedung.text = response.body()!!.data.levelNumber.toString()
+                status_detailGedung.text = response.body()!!.data.buildingStatus.toString()
                         .toLowerCase(Locale.ROOT)
                         .capitalize(Locale.ROOT)
 
@@ -129,7 +119,7 @@ class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
                 retrievedDetectionData.await().filter { it.deviceID == eachSensor.deviceID }
             }
 
-            victimQty.text = retrievedDetectionData.await().size.toString()
+            number_victimQty.text = retrievedDetectionData.await().size.toString()
 
             Log.d("Main", retrievedAckData.await().size.toString() + " debug 1d")
 
@@ -137,7 +127,7 @@ class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
                 retrievedAckData.await().filter { it.detectionID == eachDetection.detectionID }
             }
 
-            victimAck.text = retrievedAckData.await().size.toString()
+            number_victimAck.text = retrievedAckData.await().size.toString()
         }
 
         topAppBar.setOnMenuItemClickListener { menuItem ->
@@ -151,18 +141,18 @@ class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
             }
         }
 
-        /**
-        val seeFloorMapButton = findViewById<Button>(R.id.button_seeFloorplan)
-
-        seeFloorMapButton.setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
+        button_seeFloorplan.setOnClickListener {
+            val intent = Intent(this, FloorMapActivity::class.java)
             startActivity(intent)
-        }*/
+        }
 
         val unauthorizeButton = findViewById<Button>(R.id.button_endSession)
 
         unauthorizeButton.setOnClickListener {
             authorizationViewModel.unauthorize()
+
+            number_victimQty.clearFindViewByIdCache()
+            number_victimAck.clearFindViewByIdCache()
 
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -177,7 +167,10 @@ class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
     }
 
     override fun onBackPressed() {
-        /** Do nothing while user presses the back button */
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
     private suspend fun retrieveRoomData(viewModel: MainViewModel): MutableList<RetrievedRoomData> {

@@ -4,6 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FloorMapActivity">
+    tools:context=".ui.FloorMapActivity">
+
+    <com.vilocmaker.viloc.ui.ZoomableViewGroup
+        android:id="@+id/zoomControl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <ImageView
+                android:id="@+id/svgImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center" />
+
+        </FrameLayout>
+
+    </com.vilocmaker.viloc.ui.ZoomableViewGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

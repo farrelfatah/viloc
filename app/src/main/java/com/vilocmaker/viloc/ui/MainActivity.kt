@@ -58,7 +58,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        /** Do nothing while user presses the back button */
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
     private fun setupChooseBuildingRecyclerView() {

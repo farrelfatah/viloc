@@ -31,8 +31,6 @@ class  AccountActivity : AppCompatActivity() {
         SharedPreferences.init(this)
 
         val userId = SharedPreferences.userId
-        val accountName = findViewById<TextView>(R.id.accountUsername)
-        val accountRole = findViewById<TextView>(R.id.accountRole)
 
         val repository = Repository()
         val viewModelFactory = MainViewModelFactory(repository)
@@ -52,16 +50,14 @@ class  AccountActivity : AppCompatActivity() {
                 Log.d("Main", response.code().toString() + " from Account Activity")
                 Log.d("Main", response.message() + " from Account Activity")
 
-                accountName.text = response.body()!!.data.userName
+                accountUsername.text = response.body()!!.data.userName
                 accountRole.text = response.body()!!.data.role.toString()
             } else {
                 Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
 
-        val logoutButton = findViewById<Button>(R.id.logout_button)
-
-        logoutButton.setOnClickListener {
+        logout_button.setOnClickListener {
             authorizationViewModel.unauthorize()
             loginViewModel.logout()
 
