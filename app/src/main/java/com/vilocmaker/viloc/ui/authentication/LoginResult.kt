@@ -1,4 +1,4 @@
-package com.vilocmaker.viloc.ui.autentication
+package com.vilocmaker.viloc.ui.authentication
 
 /**
  * Authentication result : success (user details) or error message.

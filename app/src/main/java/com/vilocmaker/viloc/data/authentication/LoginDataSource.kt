@@ -3,7 +3,11 @@ package com.vilocmaker.viloc.data.authentication
 import com.vilocmaker.viloc.data.Result
 import com.vilocmaker.viloc.data.authentication.model.LoggedInUser
 import com.vilocmaker.viloc.data.preference.SharedPreferences
-import com.vilocmaker.viloc.model.RetrievedUserData
+import com.vilocmaker.viloc.data.preference.SharedPreferences.isLogin
+import com.vilocmaker.viloc.data.preference.SharedPreferences.userId
+import com.vilocmaker.viloc.data.preference.SharedPreferences.userName
+import com.vilocmaker.viloc.data.preference.SharedPreferences.userRole
+import com.vilocmaker.viloc.model.User
 import okhttp3.internal.and
 import java.io.IOException
 import java.lang.StringBuilder
@@ -16,11 +20,11 @@ import java.security.NoSuchAlgorithmException
  */
 class LoginDataSource {
 
-    fun login(username: String, password: String, retrievedUserData: List<RetrievedUserData>): Result<LoggedInUser> {
+    fun login(uname: String, password: String, retrievedUserData: List<User>): Result<LoggedInUser> {
 
         val authenticatedUser: LoggedInUser?
 
-        val matchedUser: RetrievedUserData? = retrievedUserData.firstOrNull { it.username == username }
+        val matchedUser: User? = retrievedUserData.firstOrNull { it.userName == uname }
 
         val hashedPassword: String = hashWithSHA512(password)
 
@@ -29,9 +33,11 @@ class LoginDataSource {
                 if (hashedPassword != matchedUser.password) {
                     Result.Error(IOException("Error logging in"))
                 } else {
-                    authenticatedUser = LoggedInUser(matchedUser.userID, username)
-                    SharedPreferences.isLogin = true
-                    SharedPreferences.userId = authenticatedUser.userId
+                    isLogin = true
+                    userId = matchedUser._id.toString()
+                    userName = matchedUser.userName
+                    userRole = matchedUser.role.toString()
+                    authenticatedUser = LoggedInUser(userId, userName)
                     Result.Success(authenticatedUser)
                 }
             } else Result.Error(IOException("Error logging in"))

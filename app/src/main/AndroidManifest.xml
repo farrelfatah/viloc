@@ -10,8 +10,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
-        <activity android:name=".ui.FloorMapActivity" />
+        android:theme="@style/Theme.Viloc">
+
+        <activity android:name=".ui.floormap.FloorNumberActivity" />
+        <activity android:name=".ui.floormap.FloorMapActivity" />
         <activity android:name=".ui.BuildingSelectedActivity" />
         <activity android:name=".ui.authorization.AuthorizationActivity" />
         <activity
@@ -29,12 +31,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.AccountActivity" />
-        <activity android:name=".ui.autentication.LoginActivity" />
+        <activity android:name=".ui.authentication.LoginActivity" />
         <activity android:name=".ui.MainActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
     </application>
 
 </manifest>

@@ -6,7 +6,6 @@
         android:id="@+id/account_menu"
         android:icon="@drawable/ic_baseline_account_circle_24"
         android:title="@string/account_menu"
-        android:contentDescription="@string/content_description_account"
         app:showAsAction="ifRoom" />
 
 </menu>

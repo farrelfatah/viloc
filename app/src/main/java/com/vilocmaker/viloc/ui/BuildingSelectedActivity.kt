@@ -1,14 +1,23 @@
 package com.vilocmaker.viloc.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.vilocmaker.viloc.R
 import com.vilocmaker.viloc.data.preference.SharedPreferences2
+import com.vilocmaker.viloc.data.preference.SharedPreferences2.buildingAddress
+import com.vilocmaker.viloc.data.preference.SharedPreferences2.buildingCoordinateX
+import com.vilocmaker.viloc.data.preference.SharedPreferences2.buildingCoordinateY
+import com.vilocmaker.viloc.data.preference.SharedPreferences2.buildingId
+import com.vilocmaker.viloc.data.preference.SharedPreferences2.buildingName
+import com.vilocmaker.viloc.data.preference.SharedPreferences2.buildingStatus
+import com.vilocmaker.viloc.data.preference.SharedPreferences2.horizontalLength
+import com.vilocmaker.viloc.data.preference.SharedPreferences2.levelNumber
+import com.vilocmaker.viloc.data.preference.SharedPreferences2.verticalLength
 import com.vilocmaker.viloc.model.RetrievedAcknowledgementData
 import com.vilocmaker.viloc.model.RetrievedDetectionData
 import com.vilocmaker.viloc.model.RetrievedRoomData
@@ -16,6 +25,7 @@ import com.vilocmaker.viloc.model.RetrievedSensorData
 import com.vilocmaker.viloc.repository.Repository
 import com.vilocmaker.viloc.ui.authorization.AuthorizationViewModel
 import com.vilocmaker.viloc.ui.authorization.AuthorizationViewModelFactory
+import com.vilocmaker.viloc.ui.floormap.FloorMapActivity
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_building_selected.*
 import kotlinx.android.synthetic.main.activity_main.topAppBar
@@ -27,7 +37,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
 
-    lateinit var job: Job
+    private lateinit var job: Job
 
     private lateinit var viewModel: MainViewModel
     private lateinit var authorizationViewModel: AuthorizationViewModel
@@ -43,8 +53,6 @@ class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
 
         SharedPreferences2.init(this)
 
-        val buildingId = SharedPreferences2.buildingId
-
         val repository = Repository()
         val viewModelFactory = MainViewModelFactory(repository)
 
@@ -52,82 +60,50 @@ class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
         authorizationViewModel = ViewModelProvider(this, AuthorizationViewModelFactory())
                 .get(AuthorizationViewModel::class.java)
 
-        viewModel.retrieveBuildingItem("building", buildingId)
-        viewModel.myBuildingItemResponse.observe(this, { response ->
-            if (response.isSuccessful) {
-                Log.d("Main", response.body()!!.data.buildingName)
-                Log.d("Main", response.body()!!.data.buildingStatus.toString())
-                Log.d("Main", response.code().toString())
-                Log.d("Main", response.message())
+        cardTitle_buildingTitle.text = buildingName
+        cardSubs_buildingStatus.text = buildingStatus
 
-                cardTitle_buildingTitle.text = response.body()!!.data.buildingName
-                cardSubs_buildingStatus.text = response.body()!!.data.buildingStatus.toString()
-                        .toLowerCase(Locale.ROOT)
-                        .capitalize(Locale.ROOT)
+        alamat_detailGedung.text = buildingAddress
 
-                alamat_detailGedung.text = response.body()!!.data.buildingAddress
+        val xAxis = buildingCoordinateX.toString()
+        val yAxis = buildingCoordinateY.toString()
+        val coord = "$xAxis, $yAxis"
+        koordinat_detailGedung.text = coord
 
-                val xAxis = response.body()!!.data.buildingCoordinate.x_Axis.toString()
-                val yAxis = response.body()!!.data.buildingCoordinate.y_Axis.toString()
-                val coordinate = "$xAxis, $yAxis"
+        val xLength = horizontalLength.toString()
+        val yLength = verticalLength.toString()
+        val dimens = "$xLength m X $yLength m"
+        dimensi_detailGedung.text = dimens
 
-                koordinat_detailGedung.text = coordinate
+        lantai_detailGedung.text = levelNumber.toString()
+        status_detailGedung.text = buildingStatus.toLowerCase(Locale.ROOT).capitalize(Locale.ROOT)
 
-                val xLength = response.body()!!.data.horizontalLength.toString()
-                val yLength = response.body()!!.data.verticalLength.toString()
-                val dimens = "$xLength m X $yLength m"
-                dimensi_detailGedung.text = dimens
-
-                lantai_detailGedung.text = response.body()!!.data.levelNumber.toString()
-                status_detailGedung.text = response.body()!!.data.buildingStatus.toString()
-                        .toLowerCase(Locale.ROOT)
-                        .capitalize(Locale.ROOT)
-
-            } else {
-                Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
-            }
-        })
+        number_victimQty.text = "-"
 
         MainScope().launch(coroutineContext) {
             val retrievedRoomData = async { retrieveRoomData(viewModel) }
-
             val retrievedSensorData = async { retrieveSensorData(viewModel) }
 
-            val retrievedDetectionData = async { retrieveDetectionData(viewModel) }
+            if (retrievedSensorData.await().isNotEmpty()) {
+                val retrievedDetectionData = async { retrieveDetectionData(viewModel) }
+                val retrievedAckData = async { retrieveAckData(viewModel) }
 
-            val retrievedAckData = async { retrieveAckData(viewModel) }
+                retrievedRoomData.await().filter { it.buildingID == buildingId }
 
-            Log.d("Main", "Async building Id: $buildingId")
+                for (eachRoom in retrievedRoomData.await()) {
+                    retrievedSensorData.await().filter { it.roomID == eachRoom.roomID }
+                }
 
-            Log.d("Main", retrievedRoomData.await().size.toString() + " building: $buildingId, debug 1a (before filter)")
+                for (eachSensor in retrievedSensorData.await()) {
+                    retrievedDetectionData.await().filter { it.deviceID == eachSensor.deviceID }
+                }
 
-            retrievedRoomData.await().filter { it.buildingID == buildingId }
+                number_victimQty.text = retrievedDetectionData.await().size.toString()
 
-            Log.d("Main", retrievedRoomData.await().size.toString() + " debug 1a (after filter)")
-
-            Log.d("Main", retrievedSensorData.await().size.toString() + " debug 1b (before filter)")
-
-            for (eachRoom in retrievedRoomData.await()) {
-                retrievedSensorData.await().filter { it.roomID == eachRoom.roomID }
+                for (eachDetection in retrievedDetectionData.await()) {
+                    retrievedAckData.await().filter { it.detectionID == eachDetection.detectionID }
+                }
             }
-
-            Log.d("Main", retrievedSensorData.await().size.toString() + " debug 1b (after filter)")
-
-            Log.d("Main", retrievedDetectionData.await().size.toString() + " debug 1c")
-
-            for (eachSensor in retrievedSensorData.await()) {
-                retrievedDetectionData.await().filter { it.deviceID == eachSensor.deviceID }
-            }
-
-            number_victimQty.text = retrievedDetectionData.await().size.toString()
-
-            Log.d("Main", retrievedAckData.await().size.toString() + " debug 1d")
-
-            for (eachDetection in retrievedDetectionData.await()) {
-                retrievedAckData.await().filter { it.detectionID == eachDetection.detectionID }
-            }
-
-            number_victimAck.text = retrievedAckData.await().size.toString()
         }
 
         topAppBar.setOnMenuItemClickListener { menuItem ->
@@ -141,19 +117,21 @@ class BuildingSelectedActivity : AppCompatActivity(), CoroutineScope {
             }
         }
 
-        button_seeFloorplan.setOnClickListener {
+        seeFloorMap_button.setOnClickListener {
             val intent = Intent(this, FloorMapActivity::class.java)
             startActivity(intent)
         }
 
-        val unauthorizeButton = findViewById<Button>(R.id.button_endSession)
+        navigate_button.setOnClickListener {
+            val gmNavIntentUri = Uri.parse("google.navigation:q=$buildingAddress")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmNavIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
+        }
 
-        unauthorizeButton.setOnClickListener {
+        endSession_button.setOnClickListener {
             authorizationViewModel.unauthorize()
-
             number_victimQty.clearFindViewByIdCache()
-            number_victimAck.clearFindViewByIdCache()
-
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
 

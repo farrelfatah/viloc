@@ -5,8 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.transition.Explode
 import android.util.Log
 import android.view.View
+import android.view.Window
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
@@ -18,12 +20,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.vilocmaker.viloc.R
 import com.vilocmaker.viloc.data.preference.SharedPreferences2
-import com.vilocmaker.viloc.model.RetrievedBuildingData
+import com.vilocmaker.viloc.model.Building
 import com.vilocmaker.viloc.repository.Repository
 import com.vilocmaker.viloc.ui.BuildingSelectedActivity
 import com.vilocmaker.viloc.ui.MainViewModel
 import com.vilocmaker.viloc.ui.MainViewModelFactory
-import com.vilocmaker.viloc.ui.autentication.afterTextChanged
+import com.vilocmaker.viloc.ui.authentication.afterTextChanged
 import com.vilocmaker.viloc.util.Constant.Companion.EXTRA_MESSAGE
 import kotlinx.android.synthetic.main.activity_account.*
 import kotlinx.android.synthetic.main.activity_authorization.*
@@ -33,7 +35,7 @@ class AuthorizationActivity : AppCompatActivity() {
     private lateinit var authorizationViewModel: AuthorizationViewModel
     private lateinit var viewModel: MainViewModel
 
-    private lateinit var retrievedBuildingData: MutableList<RetrievedBuildingData>
+    private lateinit var retrievedBuildingData: MutableList<Building>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,8 +121,8 @@ class AuthorizationActivity : AppCompatActivity() {
         }
     }
 
-    private fun retrieveBuildingData(viewModel: MainViewModel): MutableList<RetrievedBuildingData> {
-        val buildingList: MutableList<RetrievedBuildingData> = mutableListOf()
+    private fun retrieveBuildingData(viewModel: MainViewModel): MutableList<Building> {
+        val buildingList: MutableList<Building> = mutableListOf()
 
         viewModel.retrieveBuildingItemList("building", null, null)
         viewModel.myBuildingItemListResponse.observe(this, { response ->
@@ -136,10 +138,16 @@ class AuthorizationActivity : AppCompatActivity() {
             }
 
             for (eachBuilding in response.body()!!.data) {
-                val aBuilding = RetrievedBuildingData(
-                    eachBuilding._id.toString().substring(6, 30),
-                    eachBuilding.buildingName,
-                    eachBuilding.password
+                val aBuilding = Building(
+                        eachBuilding._id.toString().substring(6, 30),
+                        eachBuilding.buildingName,
+                        eachBuilding.password,
+                        eachBuilding.buildingAddress,
+                        eachBuilding.buildingCoordinate,
+                        eachBuilding.buildingStatus,
+                        eachBuilding.horizontalLength,
+                        eachBuilding.verticalLength,
+                        eachBuilding.levelNumber
                 )
 
                 buildingList.add(aBuilding)
@@ -179,6 +187,7 @@ class AuthorizationActivity : AppCompatActivity() {
             putExtra(EXTRA_MESSAGE, buildingName)
         }
         startActivity(intent)
+        overridePendingTransition(R.anim.no_anim, R.anim.no_anim)
     }
 }
 

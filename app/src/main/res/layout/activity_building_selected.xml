@@ -42,7 +42,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardView_banyakKorban"
+                android:id="@+id/cardView_infoGedung"
                 style="@style/Widget.MaterialComponents.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:fontFamily="@font/nunito_sans"
-                        android:text="@string/cardTitle_buildingInfo"
+                        android:text="@string/empty"
                         android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline5"
                         android:typeface="sans" />
 
@@ -75,36 +75,36 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:fontFamily="@font/nunito_sans"
-                        android:text="@string/buildingStatus"
+                        android:text="@string/empty"
                         android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle2"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="@dimen/default_margin"
                         android:orientation="horizontal">
 
                         <Button
-                            android:id="@+id/button_endSession"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:layout_width="match_parent"
+                            android:id="@+id/navigate_button"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_toStartOf="@id/seeFloorMap_button"
                             android:layout_marginEnd="@dimen/quarter_default_margin"
-                            android:layout_weight="1"
-                            android:text="@string/button_endSession"
+                            android:text="@string/navigate_button"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button" />
 
                         <Button
-                            android:id="@+id/button_seeFloorplan"
+                            android:id="@+id/seeFloorMap_button"
                             style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
                             android:layout_marginStart="@dimen/quarter_default_margin"
-                            android:layout_weight="1"
                             android:text="@string/button_seeFloorplan"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button" />
-                    </LinearLayout>
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -116,57 +116,11 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/banyakKorban_cardview"
                     style="@style/Widget.MaterialComponents.CardView"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/default_margin"
-                    android:layout_marginTop="@dimen/half_default_margin"
-                    android:layout_marginEnd="@dimen/half_default_margin"
-                    android:layout_marginBottom="@dimen/half_default_margin"
-                    android:layout_weight="1"
-                    app:cardCornerRadius="@dimen/round_corner"
-                    app:cardElevation="@dimen/card_elevation">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="@dimen/default_margin"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/cardTitle_victimQty"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/cardTitle_victimQty"
-                            android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1" />
-
-                        <TextView
-                            android:id="@+id/number_victimQty"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/number_victimQty"
-                            android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline2" />
-
-                        <Button
-                            android:id="@+id/button_seeMore"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="-8dp"
-                            android:layout_marginTop="@dimen/half_default_margin"
-                            android:text="@string/button_seeMore"
-                            android:textAlignment="viewStart"
-                            android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.MaterialComponents.CardView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/half_default_margin"
                     android:layout_marginTop="@dimen/half_default_margin"
                     android:layout_marginEnd="@dimen/default_margin"
                     android:layout_marginBottom="@dimen/half_default_margin"
@@ -174,38 +128,36 @@
                     app:cardCornerRadius="@dimen/round_corner"
                     app:cardElevation="@dimen/card_elevation">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="@dimen/default_margin"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/cardTitle_victimAck"
-                            android:layout_width="match_parent"
+                            android:id="@+id/cardTitle_victimQty"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/cardTitle_victimAck"
-                            android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Subtitle1" />
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:text="@string/cardTitle_victimQty"
+                            android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6" />
 
                         <TextView
-                            android:id="@+id/number_victimAck"
-                            android:layout_width="match_parent"
+                            android:id="@+id/number_victimQty"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/number_victimAck"
-                            android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline2" />
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginTop="0dp"
+                            android:text="@string/empty"
+                            android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline3" />
 
-                        <Button
-                            android:id="@+id/button_seeMore2"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="-8dp"
-                            android:layout_marginTop="@dimen/half_default_margin"
-                            android:text="@string/button_seeMore"
-                            android:textAlignment="viewStart"
-                            android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button" />
-                    </LinearLayout>
+                    </RelativeLayout>
+
                 </com.google.android.material.card.MaterialCardView>
+
+
             </LinearLayout>
 
             <com.google.android.material.card.MaterialCardView
@@ -252,14 +204,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/half_default_margin"
-                            android:text="TextView"
+                            android:text="@string/empty"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
                         <TextView
                             android:id="@+id/koordinatSubs_detailGedung"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/koordinat_subs"
+                            android:text="@string/coord_subs"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption" />
 
                         <TextView
@@ -267,14 +219,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/half_default_margin"
-                            android:text="TextView"
+                            android:text="@string/empty"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
                         <TextView
                             android:id="@+id/dimensiSubs_detailGedung"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/dimensi_subs"
+                            android:text="@string/dimens_subs"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption" />
 
                         <TextView
@@ -282,14 +234,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/half_default_margin"
-                            android:text="TextView"
+                            android:text="@string/empty"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
                         <TextView
                             android:id="@+id/lantaiSubs_detailGedung"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/lantai_subs"
+                            android:text="@string/floor_subs"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Caption" />
 
                         <TextView
@@ -297,7 +249,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/half_default_margin"
-                            android:text="TextView"
+                            android:text="@string/empty"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
                         <TextView
@@ -312,71 +264,29 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/quarter_default_margin"
-                            android:text="TextView"
+                            android:text="@string/empty"
                             android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
                     </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_activeUser"
-                style="@style/Widget.MaterialComponents.CardView"
+            <Button
+                android:id="@+id/endSession_button"
+                style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/longbutton_height"
                 android:layout_marginStart="@dimen/default_margin"
-                android:layout_marginTop="@dimen/half_default_margin"
                 android:layout_marginEnd="@dimen/default_margin"
-                android:layout_marginBottom="@dimen/half_default_margin"
-                app:cardCornerRadius="@dimen/round_corner"
-                app:cardElevation="@dimen/card_elevation">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/default_margin"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/cardTitle_activeUser"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/default_margin"
-                        android:text="@string/cardTitle_activeUser"
-                        android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline5" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        style="material list"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="-8dp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/default_margin"
-                android:layout_marginTop="@dimen/half_default_margin"
-                android:layout_marginEnd="@dimen/default_margin"
-                android:layout_marginBottom="@dimen/default_margin"
-                app:cardCornerRadius="@dimen/round_corner"
-                app:cardElevation="@dimen/card_elevation">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/default_margin"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/cardTitle_feedback"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/cardTitle_sendFeedback"
-                        android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline5" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                android:backgroundTint="@color/white"
+                android:text="@string/button_endSession"
+                android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button"
+                android:textColor="@color/red"
+                app:cornerRadius="@dimen/round_corner"
+                app:iconTint="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/accountCardView" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -386,6 +296,7 @@
                 app:cardMaxElevation="0dp" />
 
         </LinearLayout>
+
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

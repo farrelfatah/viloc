@@ -21,14 +21,6 @@ class Repository {
         return RetrofitInstance.api.retrieveRoomItemList(name, limit, offset)
     }
 
-    suspend fun retrieveFacilityItem(name: String, id: String): Response<FacilityItemResponse> {
-        return RetrofitInstance.api.retrieveFacilityItem(name, id)
-    }
-
-    suspend fun retrieveFacilityItemList(name: String, limit: Int?, offset: Int?): Response<FacilityItemListResponse> {
-        return RetrofitInstance.api.retrieveFacilityItemList(name, limit, offset)
-    }
-
     suspend fun retrieveSensorItem(name: String, id: String): Response<SensorItemResponse> {
         return RetrofitInstance.api.retrieveSensorItem(name, id)
     }

@@ -10,6 +10,9 @@
     <dimen name="login_margin">96dp</dimen>
 
     <dimen name="card_elevation">4dp</dimen>
+    <dimen name="double_card_elevation">8dp</dimen>
+
+    <dimen name="longbutton_height">56dp</dimen>
 
     <dimen name="round_corner">8dp</dimen>
 

@@ -22,7 +22,7 @@
             android:background="@color/purple_500"
             app:navigationIcon="@drawable/ic_baseline_close_24"
             app:subtitleTextColor="#FFFFFF"
-            app:title="Text view"
+            app:title="@string/empty"
             app:titleTextAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6"
             app:titleTextColor="@color/white" />
 
@@ -52,7 +52,7 @@
         android:layout_gravity="start"
         android:layout_marginTop="@dimen/fourth_default_margin"
         android:enabled="false"
-        android:text="@string/action_sign_in_short"
+        android:text="@string/action_authorize_short"
         android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

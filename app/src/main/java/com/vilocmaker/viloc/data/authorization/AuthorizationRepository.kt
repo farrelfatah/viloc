@@ -2,7 +2,7 @@ package com.vilocmaker.viloc.data.authorization
 
 import com.vilocmaker.viloc.data.Result
 import com.vilocmaker.viloc.data.authorization.model.AuthorizedBuilding
-import com.vilocmaker.viloc.model.RetrievedBuildingData
+import com.vilocmaker.viloc.model.Building
 
 /**
  * Class that requests authorization and building information from the remote data source and
@@ -26,7 +26,7 @@ class AuthorizationRepository(val dataSource: AuthorizationDataSource) {
         dataSource.unauthorize()
     }
 
-    fun authorize(buildingName: String, password: String, retrievedBuildingData: List<RetrievedBuildingData>): Result<AuthorizedBuilding> {
+    fun authorize(buildingName: String, password: String, retrievedBuildingData: List<Building>): Result<AuthorizedBuilding> {
         // handle authorization
         val result = dataSource.authorize(buildingName, password, retrievedBuildingData)
 

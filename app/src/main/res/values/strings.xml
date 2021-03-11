@@ -10,12 +10,13 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
+    <string name="action_authorize_short">Authorize</string>
     <string name="welcome">"Selamat datang!"</string>
     <string name="invalid_username">Nama pengguna tidak valid</string>
     <string name="invalid_password">Password harus lebih dari 8 karakter</string>
     <string name="login_failed">"Login gagal"</string>
     <string name="authorization_failed">"Otorisasi gagal"</string>
-    <string name="cardTitle_victimQty">Korban Terdeteksi</string>
+    <string name="cardTitle_victimQty">Korban\nTerdeteksi</string>
     <string name="cardTitle_victimAck">Korban Ditemukan</string>
     <string name="button_seeFloorplan">Lihat denah</string>
     <string name="button_endSession">Akhiri sesi</string>
@@ -24,19 +25,24 @@
     <string name="cardTitle_activeUser">Pengguna Aktif</string>
     <string name="cardTitle_chooseBuilding">Pilih Gedung</string>
     <string name="cardTitle_sendFeedback">Kirim Feedback</string>
-    <string name="account_menu">Account</string>
+    <string name="account_menu">Akun</string>
     <string name="content_description_account">Account Menu</string>
     <string name="Logout">Log Out</string>
-    <string name="account_username_title">Username</string>
-    <string name="account_role_title">Role</string>
+    <string name="account_username_title">Nama Pengguna</string>
+    <string name="account_role_title">Role Pengguna</string>
     <string name="seeOnMap_button">Lihat pada peta</string>
+    <string name="navigate_button">Arahkan saya</string>
     <string name="chooseBuilding_button">Pilih</string>
     <string name="successLogout">Log out berhasil</string>
     <string name="buildingInfoDetail">Informasi Gedung</string>
     <string name="address_subs">Alamat</string>
-    <string name="koordinat_subs">Titik koordinat</string>
-    <string name="dimensi_subs">Dimensi gedung</string>
-    <string name="lantai_subs">Jumlah lantai</string>
+    <string name="coord_subs">Titik koordinat</string>
+    <string name="dimens_subs">Dimensi gedung</string>
+    <string name="floor_subs">Jumlah lantai</string>
     <string name="status_subs">Status</string>
+    <string name="chooseFloor_title">Pilih lantai</string>
+    <string name="chooseFloor_button">Pilih</string>
+
+    <string name="empty">  </string>
 
 </resources>

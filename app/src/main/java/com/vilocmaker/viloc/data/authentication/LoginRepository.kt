@@ -2,7 +2,7 @@ package com.vilocmaker.viloc.data.authentication
 
 import com.vilocmaker.viloc.data.Result
 import com.vilocmaker.viloc.data.authentication.model.LoggedInUser
-import com.vilocmaker.viloc.model.RetrievedUserData
+import com.vilocmaker.viloc.model.User
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -26,7 +26,7 @@ class LoginRepository(val dataSource: LoginDataSource) {
         dataSource.logout()
     }
 
-    fun login(username: String, password: String, retrievedUserData: List<RetrievedUserData>): Result<LoggedInUser> {
+    fun login(username: String, password: String, retrievedUserData: List<User>): Result<LoggedInUser> {
         // handle login
         val result = dataSource.login(username, password, retrievedUserData)
 

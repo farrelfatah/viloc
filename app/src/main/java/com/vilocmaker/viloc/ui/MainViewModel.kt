@@ -16,9 +16,6 @@ class MainViewModel(private val repository: Repository): ViewModel() {
     val myRoomItemResponse: MutableLiveData<Response<RoomItemResponse>> = MutableLiveData()
     val myRoomItemListResponse: MutableLiveData<Response<RoomItemListResponse>> = MutableLiveData()
 
-    val myFacilityItemResponse: MutableLiveData<Response<FacilityItemResponse>> = MutableLiveData()
-    val myFacilityItemListResponse: MutableLiveData<Response<FacilityItemListResponse>> = MutableLiveData()
-
     val mySensorItemResponse: MutableLiveData<Response<SensorItemResponse>> = MutableLiveData()
     val mySensorItemListResponse: MutableLiveData<Response<SensorItemListResponse>> = MutableLiveData()
 
@@ -58,20 +55,6 @@ class MainViewModel(private val repository: Repository): ViewModel() {
         viewModelScope.launch {
             val response = repository.retrieveRoomItemList(name, limit, offset)
             myRoomItemListResponse.value = response
-        }
-    }
-
-    fun retrieveFacilityItem(name: String, id: String) {
-        viewModelScope.launch {
-            val response = repository.retrieveFacilityItem(name, id)
-            myFacilityItemResponse.value = response
-        }
-    }
-
-    fun retrieveFacilityItemList(name: String, limit: Int?, offset: Int?) {
-        viewModelScope.launch {
-            val response = repository.retrieveFacilityItemList(name, limit, offset)
-            myFacilityItemListResponse.value = response
         }
     }
 

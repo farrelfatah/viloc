@@ -7,5 +7,4 @@ data class Acknowledgement(
     val detectionID: String,
     val userID: String,
     val timestamp: Date
-) {
-}
+) {}

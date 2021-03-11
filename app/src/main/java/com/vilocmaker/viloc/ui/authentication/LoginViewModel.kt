@@ -1,4 +1,4 @@
-package com.vilocmaker.viloc.ui.autentication
+package com.vilocmaker.viloc.ui.authentication
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,7 +8,7 @@ import com.vilocmaker.viloc.data.authentication.LoginRepository
 import com.vilocmaker.viloc.data.Result
 
 import com.vilocmaker.viloc.R
-import com.vilocmaker.viloc.model.RetrievedUserData
+import com.vilocmaker.viloc.model.User
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 
@@ -18,7 +18,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
-    fun login(username: String, password: String, retrievedUserData: List<RetrievedUserData>) {
+    fun login(username: String, password: String, retrievedUserData: List<User>) {
         // can be launched in a separate asynchronous job
         val result = loginRepository.login(username, password, retrievedUserData)
 

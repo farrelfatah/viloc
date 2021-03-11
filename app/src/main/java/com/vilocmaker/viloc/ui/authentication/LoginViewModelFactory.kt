@@ -1,4 +1,4 @@
-package com.vilocmaker.viloc.ui.autentication
+package com.vilocmaker.viloc.ui.authentication
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

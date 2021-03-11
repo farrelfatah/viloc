@@ -68,5 +68,4 @@ class MainActivity : AppCompatActivity() {
         chooseBuilding_recyclerView.adapter = chooseBuildingAdapter
         chooseBuilding_recyclerView.layoutManager = LinearLayoutManager(this)
     }
-
 }

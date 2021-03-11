@@ -5,6 +5,5 @@ data class User(
     val userName: String,
     val password: String,
     val role: Role,
-    val userStatus: Status,
     val userCoordinate: Point
 ){}

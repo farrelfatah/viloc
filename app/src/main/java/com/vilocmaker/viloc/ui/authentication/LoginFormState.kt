@@ -1,4 +1,4 @@
-package com.vilocmaker.viloc.ui.autentication
+package com.vilocmaker.viloc.ui.authentication
 
 /**
  * Data validation state of the login form.

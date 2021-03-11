@@ -1,4 +1,4 @@
-package com.vilocmaker.viloc.ui.autentication
+package com.vilocmaker.viloc.ui.authentication
 
 import android.app.Activity
 import android.content.Intent
@@ -18,7 +18,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.vilocmaker.viloc.R
 import com.vilocmaker.viloc.data.preference.SharedPreferences
-import com.vilocmaker.viloc.model.RetrievedUserData
+import com.vilocmaker.viloc.model.User
 import com.vilocmaker.viloc.repository.Repository
 import com.vilocmaker.viloc.ui.MainActivity
 import com.vilocmaker.viloc.ui.MainViewModel
@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var viewModel: MainViewModel
 
-    private lateinit var retrievedUserData: MutableList<RetrievedUserData>
+    private lateinit var retrievedUserData: MutableList<User>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,8 +117,8 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun retrieveUserData(viewModel: MainViewModel): MutableList<RetrievedUserData> {
-        val userList: MutableList<RetrievedUserData> = mutableListOf()
+    private fun retrieveUserData(viewModel: MainViewModel): MutableList<User> {
+        val userList: MutableList<User> = mutableListOf()
 
         viewModel.retrieveUserItemList("user", null, null)
         viewModel.myUserItemListResponse.observe(this, { response ->
@@ -135,17 +135,19 @@ class LoginActivity : AppCompatActivity() {
             }
 
             for (eachUser in response.body()!!.data) {
-                val aUser = RetrievedUserData(
-                    eachUser._id.toString().substring(6, 30),
-                    eachUser.userName,
-                    eachUser.password
+                val aUser = User(
+                        eachUser._id.toString().substring(6, 30),
+                        eachUser.userName,
+                        eachUser.password,
+                        eachUser.role,
+                        eachUser.userCoordinate
                 )
 
                 userList.add(aUser)
             }
 
             for (eachUser in userList) {
-                Log.d("Main", eachUser.username + " from Login Activity" + " res")
+                Log.d("Main", eachUser.userName + " from Login Activity" + " res")
             }
         })
 
@@ -177,8 +179,8 @@ class LoginActivity : AppCompatActivity() {
     private fun stayOnLoginActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
+        overridePendingTransition(R.anim.no_anim, R.anim.no_anim)
     }
-
 }
 
 /**

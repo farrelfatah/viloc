@@ -34,7 +34,7 @@
                 android:id="@+id/chooseBuilding_buildingName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:text="@string/empty"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Headline6" />
 
             <TextView
@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/chooseBuilding_buildingName"
-                android:text="TextView"
+                android:text="@string/empty"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body2" />
 
             <TextView
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/chooseBuilding_buildingAddress"
                 android:layout_marginTop="@dimen/half_default_margin"
-                android:text="TextView"
+                android:text="@string/empty"
                 android:textAppearance="@style/TextAppearance.MdcTypographyStyles.Body1" />
 
             <Button

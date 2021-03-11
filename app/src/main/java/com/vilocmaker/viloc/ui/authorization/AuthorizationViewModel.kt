@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.vilocmaker.viloc.R
 import com.vilocmaker.viloc.data.Result
 import com.vilocmaker.viloc.data.authorization.AuthorizationRepository
-import com.vilocmaker.viloc.model.RetrievedBuildingData
+import com.vilocmaker.viloc.model.Building
 
 class AuthorizationViewModel(private val authorizationRepository: AuthorizationRepository) : ViewModel() {
 
@@ -16,7 +16,7 @@ class AuthorizationViewModel(private val authorizationRepository: AuthorizationR
     private val _authorizationResult = MutableLiveData<AuthorizationResult>()
     val authorizationResult: LiveData<AuthorizationResult> = _authorizationResult
 
-    fun authorize(buildingName: String, password: String, retrievedBuildingData: List<RetrievedBuildingData>) {
+    fun authorize(buildingName: String, password: String, retrievedBuildingData: List<Building>) {
         // can be launched in a separate asynchronous job
         val result = authorizationRepository.authorize(buildingName, password, retrievedBuildingData)
 

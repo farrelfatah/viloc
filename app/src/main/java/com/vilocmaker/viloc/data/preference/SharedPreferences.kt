@@ -10,6 +10,8 @@ object SharedPreferences {
 
     private var IS_LOGIN = Pair("is_login", false)
     private var USER_ID = Pair("user_id", "")
+    private var USERNAME = Pair("username", "")
+    private var USER_ROLE = Pair("user_role", "")
 
     fun init(context: Context) {
         preferences = context.getSharedPreferences(
@@ -34,6 +36,18 @@ object SharedPreferences {
         get() = preferences.getString(USER_ID.first, USER_ID.second) ?: ""
         set(value) = preferences.edit {
             it.putString(USER_ID.first, value)
+        }
+
+    var userName: String
+        get() = preferences.getString(USERNAME.first, USERNAME.second) ?: ""
+        set(value) = preferences.edit {
+            it.putString(USERNAME.first, value)
+        }
+
+    var userRole: String
+        get() = preferences.getString(USER_ROLE.first, USER_ROLE.second) ?: ""
+        set(value) = preferences.edit {
+            it.putString(USER_ROLE.first, value)
         }
 
     fun clear() {

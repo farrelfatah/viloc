@@ -1,6 +1,7 @@
 package com.vilocmaker.viloc.adapter
 
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +15,7 @@ import com.vilocmaker.viloc.util.Constant.Companion.EXTRA_MESSAGE
 import kotlinx.android.synthetic.main.recycler_rowlayout.view.*
 import java.util.*
 
-class ChooseBuildingAdapter(): RecyclerView.Adapter<ChooseBuildingAdapter.MyViewHolder>() {
+class ChooseBuildingAdapter : RecyclerView.Adapter<ChooseBuildingAdapter.MyViewHolder>() {
 
     private var buildingList: List<Building> = emptyList<Building>()
 
@@ -46,6 +47,14 @@ class ChooseBuildingAdapter(): RecyclerView.Adapter<ChooseBuildingAdapter.MyView
             Log.d("Main", buildingId)
             Log.d("Main", buildingName)
             context.startActivity(intent)
+        }
+
+        holder.seeOnMapButton.setOnClickListener {
+            val context = holder.seeOnMapButton.context
+            val gmLocIntentUri = Uri.parse("geo:0,0?z=10&q=${buildingList[position].buildingAddress}")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmLocIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            context.startActivity(mapIntent)
         }
     }
 

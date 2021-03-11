@@ -38,21 +38,6 @@ interface NodesAPI {
 
     @FormUrlEncoded
     @POST("nodes/retrieve_item")
-    suspend fun retrieveFacilityItem(
-        @Field("name") name: String,
-        @Field("id") id: String
-    ): Response<FacilityItemResponse>
-
-    @FormUrlEncoded
-    @POST("nodes/retrieve_item")
-    suspend fun retrieveFacilityItemList(
-        @Field("name") name: String,
-        @Field("limit") limit: Int?,
-        @Field("offset") offset: Int?
-    ): Response<FacilityItemListResponse>
-
-    @FormUrlEncoded
-    @POST("nodes/retrieve_item")
     suspend fun retrieveSensorItem(
         @Field("name") name: String,
         @Field("id") id: String
