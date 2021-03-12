@@ -181,6 +181,13 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
         overridePendingTransition(R.anim.no_anim, R.anim.no_anim)
     }
+
+    override fun onBackPressed() {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+    }
 }
 
 /**
