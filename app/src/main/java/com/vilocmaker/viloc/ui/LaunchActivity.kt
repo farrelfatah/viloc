@@ -9,7 +9,6 @@ import com.vilocmaker.viloc.data.preference.SharedPreferences2
 import com.vilocmaker.viloc.ui.authentication.LoginActivity
 
 class LaunchActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launch)

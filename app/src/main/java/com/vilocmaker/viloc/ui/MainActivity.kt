@@ -37,9 +37,9 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Main", eachBuilding._id.toString().substring(6, 30) + " from Main Activity")
                     Log.d("Main", response.code().toString() + " from Main Activity")
                     Log.d("Main", response.message() + " from Main Activity")
-                }
 
-                chooseBuildingAdapter.setData(response.body()!!.data)
+                    chooseBuildingAdapter.setData(response.body()!!.data)
+                }
             } else {
                 Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
             }

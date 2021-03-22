@@ -149,7 +149,6 @@ class AuthorizationActivity : AppCompatActivity() {
                         eachBuilding.verticalLength,
                         eachBuilding.levelNumber
                 )
-
                 buildingList.add(aBuilding)
             }
 

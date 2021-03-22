@@ -14,5 +14,4 @@ class MyInterceptor: Interceptor {
 
         return chain.proceed(request)
     }
-
 }

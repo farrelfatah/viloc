@@ -124,7 +124,6 @@ class LoginActivity : AppCompatActivity() {
         viewModel.myUserItemListResponse.observe(this, { response ->
             if (response.isSuccessful) {
                 for (eachUser in response.body()!!.data) {
-
                     Log.d("Main", eachUser.userName + " from Login Activity" + " src")
                     Log.d("Main", eachUser._id.toString().substring(6, 30) + " from Login Activity" + " src")
                     Log.d("Main", response.code().toString() + " from Login Activity")
@@ -142,7 +141,6 @@ class LoginActivity : AppCompatActivity() {
                         eachUser.role,
                         eachUser.userCoordinate
                 )
-
                 userList.add(aUser)
             }
 
@@ -150,7 +148,6 @@ class LoginActivity : AppCompatActivity() {
                 Log.d("Main", eachUser.userName + " from Login Activity" + " res")
             }
         })
-
         return userList
     }
 

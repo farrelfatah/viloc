@@ -44,7 +44,6 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var retrievedRoomData: Deferred<MutableList<Room>>
     private lateinit var retrievedSensorData: Deferred<MutableList<Sensor>>
     private lateinit var retrievedDetectionData: Deferred<MutableList<Detection>>
-    private lateinit var retrievedAckData: Deferred<MutableList<Acknowledgement>>
 
     private var detectionResult: MutableList<DetectionResult> = mutableListOf()
     private var roomSensorDict: MutableList<MoreOfRetrievedSensorData> = mutableListOf()
@@ -80,7 +79,6 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
 
             if (retrievedRoomData.await().isNotEmpty()) {
                 retrievedDetectionData = async { retrieveDetectionData(viewModel) }
-                retrievedAckData = async { retrieveAckData(viewModel) }
 
                 retrievedRoomData.await().filter { it.buildingID == buildingId }
 
@@ -109,7 +107,6 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
                 }
 
                 for (eachDetection in retrievedDetectionData.await()) {
-                    retrievedAckData.await().filter { it.detectionID == eachDetection._id.toString() }
                     val aResult = DetectionResult(
                             eachDetection._id.toString(),
                             eachDetection.deviceID,
@@ -118,9 +115,7 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
                             null,
                             eachDetection.timestamp,
                             null,
-                            eachDetection.victimCoordinate,
-                            null,
-                            null
+                            eachDetection.victimCoordinate
                     )
                     detectionResult.add(aResult)
                 }
@@ -131,19 +126,6 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
                             eachResult.roomID = eachDict.roomID
                             eachResult.roomName = eachDict.roomName
                             eachResult.floorNumber = eachDict.floorNumber
-                        }
-                    }
-
-                    for (eachSensor in retrievedSensorData.await()) {
-                        if (eachResult.roomID == eachSensor.roomID) {
-                            eachResult.locationStatus = eachSensor.locationCondition.status
-                            eachResult.locationPhoto = eachSensor.locationCondition.photoURL
-                        }
-                    }
-
-                    for (eachAck in retrievedAckData.await()) {
-                        if (eachResult.detectionID == eachAck.detectionID) {
-                            eachResult.ack_timestamp = eachAck.timestamp
                         }
                     }
                 }
@@ -213,28 +195,28 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
                         Log.d("Main", response.code().toString() + " Roo from Floor Map Activity")
                         Log.d("Main", response.message() + " Roo from Floor Map Activity")
                     }
+
+                    for (eachRoom in response.body()!!.data) {
+                        val aRoom = Room(
+                                eachRoom._id.toString().substring(6, 30),
+                                eachRoom.buildingID,
+                                eachRoom.roomName,
+                                eachRoom.floorNumber,
+                                eachRoom.roomCoordinate,
+                                eachRoom.horizontalLength,
+                                eachRoom.verticalLength
+                        )
+                        roomList.add(aRoom)
+                    }
+
+                    for (eachRoom in roomList) {
+                        Log.d("Main", eachRoom.roomName + " Roo from Floor Map Activity" + " res")
+                    }
+
+                    continuation.resume(roomList)
                 } else {
                     Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
                 }
-
-                for (eachRoom in response.body()!!.data) {
-                    val aRoom = Room(
-                            eachRoom._id.toString().substring(6, 30),
-                            eachRoom.buildingID,
-                            eachRoom.roomName,
-                            eachRoom.floorNumber,
-                            eachRoom.roomCoordinate,
-                            eachRoom.horizontalLength,
-                            eachRoom.verticalLength
-                    )
-                    roomList.add(aRoom)
-                }
-
-                for (eachRoom in roomList) {
-                    Log.d("Main", eachRoom.roomName + " Roo from Floor Map Activity" + " res")
-                }
-
-                continuation.resume(roomList)
             })
         }
     }
@@ -252,25 +234,24 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
                         Log.d("Main", response.code().toString() + " Sen from Floor Map Activity")
                         Log.d("Main", response.message() + " Sen from Floor Map Activity")
                     }
+
+                    for (eachSensor in response.body()!!.data) {
+                        val aSensor = Sensor(
+                                eachSensor._id.toString().substring(6, 30),
+                                eachSensor.roomID,
+                                eachSensor.sensorCategory
+                        )
+                        sensorList.add(aSensor)
+                    }
+
+                    for (eachSensor in sensorList) {
+                        Log.d("Main", eachSensor._id.toString() + " Sen from Floor Map Activity" + " res")
+                    }
+
+                    continuation.resume(sensorList)
                 } else {
                     Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
                 }
-
-                for (eachSensor in response.body()!!.data) {
-                    val aSensor = Sensor(
-                            eachSensor._id.toString().substring(6, 30),
-                            eachSensor.roomID,
-                            eachSensor.locationCondition,
-                            eachSensor.sensorCategory
-                    )
-                    sensorList.add(aSensor)
-                }
-
-                for (eachSensor in sensorList) {
-                    Log.d("Main", eachSensor._id.toString() + " Sen from Floor Map Activity" + " res")
-                }
-
-                continuation.resume(sensorList)
             })
         }
     }
@@ -288,62 +269,26 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
                         Log.d("Main", response.code().toString() + " Det from Floor Map Activity")
                         Log.d("Main", response.message() + " Det from Floor Map Activity")
                     }
-                } else {
-                    Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
-                }
 
-                for (eachDetection in response.body()!!.data) {
-                    val aDetection = Detection(
-                            eachDetection._id.toString().substring(6, 30),
-                            eachDetection.deviceID,
-                            eachDetection.timestamp,
-                            eachDetection.victimCoordinate
-                    )
-                    detectionList.add(aDetection)
-                }
-
-                for (eachDetection in detectionList) {
-                    Log.d("Main", eachDetection._id.toString() + " Det from Floor Map Activity" + " res")
-                }
-
-                continuation.resume(detectionList)
-            })
-        }
-    }
-
-    private suspend fun retrieveAckData(viewModel: MainViewModel): MutableList<Acknowledgement> {
-        val ackList: MutableList<Acknowledgement> = mutableListOf()
-
-        viewModel.retrieveAcknowledgementItemList("acknowledgement", null, null)
-
-        return suspendCoroutine { continuation ->
-            viewModel.myAcknowledgementItemListResponse.observe(this, { response ->
-                if (response.isSuccessful) {
-                    for (eachAck in response.body()!!.data) {
-                        Log.d("Main", eachAck._id.toString().substring(6, 30) + " Ack from Floor Map Activity" + " src")
-                        Log.d("Main", response.code().toString() + " Ack from Floor Map Activity")
-                        Log.d("Main", response.message() + " Ack from Floor Map Activity")
+                    for (eachDetection in response.body()!!.data) {
+                        val aDetection = Detection(
+                                eachDetection._id.toString().substring(6, 30),
+                                eachDetection.deviceID,
+                                eachDetection.timestamp,
+                                eachDetection.victimCoordinate
+                        )
+                        detectionList.add(aDetection)
                     }
+
+                    for (eachDetection in detectionList) {
+                        Log.d("Main", eachDetection._id.toString() + " Det from Floor Map Activity" + " res")
+                    }
+
+                    continuation.resume(detectionList)
                 } else {
                     Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
                 }
-
-                for (eachAck in response.body()!!.data) {
-                    val anAck = Acknowledgement(
-                            eachAck._id.toString().substring(6, 30),
-                            eachAck.detectionID,
-                            eachAck.userID,
-                            eachAck.timestamp
-                    )
-                    ackList.add(anAck)
-                }
-
-                for (eachAck in ackList) {
-                    Log.d("Main", eachAck._id.toString() + " Ack from Floor Map Activity" + " res")
-                }
             })
-
-            continuation.resume(ackList)
         }
     }
 }

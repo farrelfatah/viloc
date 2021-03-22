@@ -10,7 +10,5 @@ data class DetectionResult(
         var floorNumber: Int?,
         val det_timestamp: Date,
         var ack_timestamp: Date?,
-        val victimCoordinate: Point,
-        var locationStatus: Status?,
-        var locationPhoto: String?
+        val victimCoordinate: Point
     )
