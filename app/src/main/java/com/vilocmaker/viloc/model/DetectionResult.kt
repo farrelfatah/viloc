@@ -8,7 +8,9 @@ data class DetectionResult(
         var roomID: String?,
         var roomName: String?,
         var floorNumber: Int?,
+        var roomCoordinate: Point?,
+        var horizontalLength: Float?,
+        var verticalLength: Float?,
         val det_timestamp: Date,
-        var ack_timestamp: Date?,
         val victimCoordinate: Point
     )

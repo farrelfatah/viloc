@@ -5,7 +5,5 @@ enum class Status {
     NOT_AVAILABLE,
     BUSY,
     ACCEPTED,
-    DECLINED,
-    OPENED,
-    CLOSED
+    DECLINED
 }

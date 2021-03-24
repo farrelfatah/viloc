@@ -42,6 +42,8 @@
     <string name="status_subs">Status</string>
     <string name="chooseFloor_title">Pilih lantai</string>
     <string name="chooseFloor_button">Pilih</string>
+    <string name="alertdialogtittle">Korban Terdeteksi</string>
+    <string name="ok_dialogbutton">OK</string>
 
     <string name="empty">  </string>
 

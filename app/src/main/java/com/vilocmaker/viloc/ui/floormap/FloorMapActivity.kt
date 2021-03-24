@@ -9,6 +9,7 @@ import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.ViewModelProvider
@@ -30,6 +31,7 @@ import kotlinx.android.synthetic.main.activity_authorization.*
 import kotlinx.android.synthetic.main.activity_building_selected.*
 import kotlinx.android.synthetic.main.activity_floor_map.*
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
@@ -92,6 +94,9 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
                             eachSensor._id.toString(),
                             eachSensor.roomID,
                             null,
+                            null,
+                            null,
+                            null,
                             null
                     )
                     roomSensorDict.add(aSensorRoom)
@@ -102,6 +107,9 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
                         if (eachDict.roomID == eachRoom._id.toString()) {
                             eachDict.roomName = eachRoom.roomName
                             eachDict.floorNumber = eachRoom.floorNumber
+                            eachDict.roomCoordinate = eachRoom.roomCoordinate
+                            eachDict.horizontalLength = eachRoom.horizontalLength
+                            eachDict.verticalLength = eachRoom.verticalLength
                         }
                     }
                 }
@@ -113,8 +121,10 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
                             null,
                             null,
                             null,
-                            eachDetection.timestamp,
                             null,
+                            null,
+                            null,
+                            eachDetection.timestamp,
                             eachDetection.victimCoordinate
                     )
                     detectionResult.add(aResult)
@@ -126,6 +136,9 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
                             eachResult.roomID = eachDict.roomID
                             eachResult.roomName = eachDict.roomName
                             eachResult.floorNumber = eachDict.floorNumber
+                            eachResult.roomCoordinate = eachDict.roomCoordinate
+                            eachResult.horizontalLength = eachDict.horizontalLength
+                            eachResult.verticalLength = eachDict.verticalLength
                         }
                     }
                 }
@@ -148,9 +161,42 @@ class FloorMapActivity : AppCompatActivity(), CoroutineScope {
             val gestureDetector = GestureDetector(this@FloorMapActivity, object : SimpleOnGestureListener() {
                 override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                     if (svgImageView.isReady) {
-                        val sCoord = svgImageView.viewToSourceCoord(e.x, e.y)
+                        for (eachItem in detectionResult) {
+                            val vCoord = svgImageView.sourceToViewCoord(
+                                    PointF(
+                                    (renderedSVG.width.toFloat() * eachItem.victimCoordinate.x_Axis.toFloat()) /
+                                            horizontalLength,
+                                    (renderedSVG.height.toFloat() * eachItem.victimCoordinate.y_Axis.toFloat()) /
+                                            verticalLength))
 
-                        Toast.makeText(this@FloorMapActivity, sCoord.toString(), Toast.LENGTH_SHORT).show()
+                            if ((e.x in (vCoord!!.x - 56)..(vCoord.x + 56)) &&
+                                (e.y in (vCoord.y - 56)..(vCoord.y + 56)) &&
+                                (eachItem.floorNumber == floorNumber)
+                            ) {
+                                val builder = AlertDialog.Builder(this@FloorMapActivity)
+                                val xLoc = "%.2f".format(eachItem.victimCoordinate.x_Axis - eachItem.roomCoordinate!!.x_Axis)
+                                val yLoc = "%.2f".format(eachItem.victimCoordinate.y_Axis - eachItem.roomCoordinate!!.y_Axis)
+
+                                val pattern = "dd-MM-yyyy HH:mm:ss"
+                                val simpleDateFormat = SimpleDateFormat(pattern)
+                                val timestamp = simpleDateFormat.format(eachItem.det_timestamp)
+
+                                with(builder)
+                                {
+                                    setTitle(R.string.alertdialogtittle)
+                                    setMessage(
+                                        "Ruang ${eachItem.roomName!!.dropLast(1)}\n" +
+                                        "- Dimensi ruang: ${eachItem.horizontalLength} m x ${eachItem.verticalLength} m\n" +
+                                        "- Lantai ${eachItem.floorNumber}\n\n" +
+                                        "Lokasi korban: ($xLoc m, $yLoc m)\n" +
+                                        "Korban terakhir terdeteksi pada:\n${timestamp}\n\n" +
+                                        "Keterangan: Lokasi korban relatif terhadap titik referensi ruangan")
+                                    setPositiveButton(R.string.ok_dialogbutton, null)
+                                    show()
+                                }
+                                break
+                            }
+                        }
                     }
                     return true
                 }
